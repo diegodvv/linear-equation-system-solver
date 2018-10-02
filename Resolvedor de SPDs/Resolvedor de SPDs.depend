@@ -1,0 +1,5 @@
+# depslib dependency file v1.0
+1538511999 source:c:\users\u17168\documents\github\resolvedor-de-spds\resolvedor de spds\main.c
+	<stdio.h>
+	<stdlib.h>
+
