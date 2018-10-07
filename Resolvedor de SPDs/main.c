@@ -2,10 +2,63 @@
 #include <stdlib.h>
 #include "determinant.h"
 
+void ResolverPorTeoremaDeCramer(double** matriz, char* variaveis, int N)
+{
+	int i, i2;
+	double D = Determinant(matriz, N);
+
+	if (D != 0)
+	for (i=0; i <= N-1; i++)
+	{
+		double** matriz_var = (double**) malloc(N * sizeof(double*));
+
+		for (i2=0; i2 <= N-1; i2++)
+		{
+			*(matriz_var + i2) = (double*) malloc(N * sizeof(double));
+		}
+
+		//Preenche a matriz
+
+		int j;
+		int j2;
+		for (j=0; j <= N-1; j++)
+		{
+			for (j2=0; j2 <= N-1; j2++)
+			{
+				if (j2 == i)
+					*(*(matriz_var + j) + j2) = *(*(matriz + j) + N);
+				else
+					*(*(matriz_var + j) + j2) = *(*(matriz + j) + j2);
+			}
+		}
+
+		double var_val = Determinant(matriz_var, N) / D;
+		printf(" %c: %.2lf\n", *(variaveis + i), var_val);
+
+
+		for (i2=0; i2 <= N-1; i2++)
+		{
+			free(*(matriz_var + i2));
+		}
+
+		free(matriz_var);
+	}
+}
+
+
+void ResolverPorGauss(double** matriz, char* variaveis, int N)
+{
+
+}
+
+
 int main()
 {
-    char* filename = (char*)malloc(257 * sizeof(char));
+	//setbuf(stdout, NULL);
+	//setbuf(stdin, NULL);
     printf("Read from file: (filename max length: %d)\n", 256);
+    fflush(stdout);
+    char* filename = (char*)malloc(257 * sizeof(char));
     scanf("%s", filename);
 
     FILE* arquivo = fopen(filename, "r");
@@ -68,51 +121,12 @@ int main()
             }
         }
 
-        //LAZY WAY TO DO IT
-        double D = Determinant(matriz, N);
-
-        if (D != 0)
-        for (i=0; i <= N-1; i++)
-        {
-            double** matriz_var = (double**) malloc(N * sizeof(double*));
-
-            for (i2=0; i2 <= N-1; i2++)
-            {
-                *(matriz_var + i2) = (double*) malloc(N * sizeof(double));
-            }
-
-            //Preenche a matriz
-
-            int j;
-            int j2;
-            for (j=0; j <= N-1; j++)
-            {
-                for (j2=0; j2 <= N-1; j2++)
-                {
-                    if (j2 == i)
-                        *(*(matriz_var + j) + j2) = *(*(matriz + j) + N);
-                    else
-                        *(*(matriz_var + j) + j2) = *(*(matriz + j) + j2);
-                }
-            }
-
-            double var_val = Determinant(matriz_var, N) / D;
-            printf(" %c: %.2lf\n", *(variaveis + i), var_val);
-
-
-
-            for (i2=0; i2 <= N-1; i2++)
-            {
-                free(*(matriz_var + i2));
-            }
-
-            free(matriz_var);
-        }
+        ResolverPorTeoremaDeCramer(matriz, variaveis, N);
 
         free(matriz);
-        free(variaveis);
+		free(variaveis);
 
-        printf("==========\n");
+		printf("==========\n");
     }
 
     return 0;
