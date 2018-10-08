@@ -48,7 +48,7 @@ void ResolverPorTeoremaDeCramer(double** matriz, char* variaveis, int N)
 
 void ResolverPorGauss(double** matriz, char* variaveis, int N)
 {
-	int i, i2;
+	int i, i2, i3;
 	//Eliminar zeros da diagonal principal
 	for (i=0; i <= N-1; i++)
 	{
@@ -78,18 +78,128 @@ void ResolverPorGauss(double** matriz, char* variaveis, int N)
 			}
 		}
 	}
+
+	//Tornar elementos da diagonal principal 1
+	for (i=0; i < N; i++)
+	{
+		if (*(*(matriz + i) + i) != 1)
+			multiplicaLinha(*(matriz + i), N+1, 1 / *(*(matriz + i) + i));
+	}
+
+	//Zerar as colunas das variáveis
+	for (i2=0; i2 < N; i2++)
+	{
+		for (i=0; i < N; i++)
+		{
+			if (*(*(matriz + i) + i2) != 0 && i != i2)
+			{
+				double* linha_a_ser_somada = (double*) malloc(N+1 * sizeof(double));
+				copiarLinha(*(matriz + i2), linha_a_ser_somada, N+1);
+
+				multiplicaLinha(linha_a_ser_somada, N+1, -1 * *(*(matriz + i) + i2));
+
+				somaLinhas(*(matriz + i), linha_a_ser_somada, N+1);
+
+				free(linha_a_ser_somada);
+
+				//Tornar os elementos da diagonal principal 1
+				for (i3=0; i3 < N; i3++)
+				{
+					if (*(*(matriz + i3) + i3) == 0)
+					{
+						printf("S.P.I. ou S.I.\n");
+						return;
+					}
+
+					if (*(*(matriz + i3) + i3) != 1)
+						multiplicaLinha(*(matriz + i3), N+1, 1 / *(*(matriz + i3) + i3));
+				}
+			}
+		}
+	}
+
+	for (i=0; i < N; i++)
+	{
+		printf(" %c: %.2lf\n", *(variaveis + i), *(*(matriz + i) + N));
+	}
 }
 
+void copiarLinha(double* linha_fonte, double* linha_destino, int length)
+{
+	int i;
+	for (i=0; i < length; i++)
+	{
+		*(linha_destino + i) = *(linha_fonte + i);
+	}
+}
+
+void multiplicaLinha(double* linha, int length, double numero)
+{
+	int i;
+	for (i=0; i < length; i++)
+	{
+		*(linha + i) *= numero;
+	}
+}
+
+void somaLinhas(double* l1, double* l2, int length)
+{
+	int i;
+	for (i=0; i < length; i++)
+	{
+		*(l1 + i) += *(l2 + i);
+	}
+}
+
+/*char* matrixToString(double** matrix, int N)
+{
+	int i, i2, stridx;
+	char* string = (char*) malloc(200 * sizeof(char));
+
+	stridx = 0;
+	string[stridx] = '[';
+	stridx++;
+
+	for (i=0; i < N; i++)
+	{
+		string[stridx] = '[';
+		stridx++;
+
+		for (i2=0; i2 < N; i2++)
+		{
+			int length = snprintf(NULL, 0, "%.2lf", matrix[i][i2]);
+			snprintf((string + stridx), length+1, "%.2lf", matrix[i][i2]);
+			stridx += length;
+
+			if (i2 != N-1)
+			{
+				string[stridx] = ',';
+				stridx++;
+
+				string[stridx] = ' ';
+				stridx++;
+			}
+		}
+
+		string[stridx] = ']';
+		stridx++;
+
+		string[stridx] = ',';
+		stridx++;
+
+		string[stridx] = ' ';
+		stridx++;
+	}
+
+	string[stridx] = ']';
+	stridx++;
+	return string;
+}*/
 
 int main()
 {
-	/*setbuf(stdout, NULL);
-	setbuf(stdin, NULL);
-	char ch;
-	while (ch != EOF)
-	{
-		scanf("%c", &ch);
-	}*/
+	//setbuf(stdout, NULL);
+	//setbuf(stdin, NULL);
     char* filename = (char*)malloc(257 * sizeof(char));
     printf("Read from file: (filename max length: 256)\n");
     fflush(stdout);
