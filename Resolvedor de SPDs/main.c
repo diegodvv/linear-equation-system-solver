@@ -48,17 +48,51 @@ void ResolverPorTeoremaDeCramer(double** matriz, char* variaveis, int N)
 
 void ResolverPorGauss(double** matriz, char* variaveis, int N)
 {
+	int i, i2;
+	//Eliminar zeros da diagonal principal
+	for (i=0; i <= N-1; i++)
+	{
+		if (*(*(matriz + i) + i) == 0)
+		{
+			//Troca linhas
+			int trocou = -1;
+			for (i2=0; i2 <= N-1; i2++)
+			{
+				if (i2 == i)
+					continue;
 
+				if (*(*(matriz + i2) + i) != 0 && *(*(matriz + i) + i2) != 0)
+				{
+					double* aux = *(matriz + i2);
+					*(matriz + i2) = *(matriz + i);
+					*(matriz + i) = aux;
+					trocou = 1;
+					break;
+				}
+			}
+
+			if (!trocou)
+			{
+				printf("S. I.");
+				return;
+			}
+		}
+	}
 }
 
 
 int main()
 {
-	//setbuf(stdout, NULL);
-	//setbuf(stdin, NULL);
-    printf("Read from file: (filename max length: %d)\n", 256);
-    fflush(stdout);
+	/*setbuf(stdout, NULL);
+	setbuf(stdin, NULL);
+	char ch;
+	while (ch != EOF)
+	{
+		scanf("%c", &ch);
+	}*/
     char* filename = (char*)malloc(257 * sizeof(char));
+    printf("Read from file: (filename max length: 256)\n");
+    fflush(stdout);
     scanf("%s", filename);
 
     FILE* arquivo = fopen(filename, "r");
@@ -121,7 +155,8 @@ int main()
             }
         }
 
-        ResolverPorTeoremaDeCramer(matriz, variaveis, N);
+        //ResolverPorTeoremaDeCramer(matriz, variaveis, N);
+        ResolverPorGauss(matriz, variaveis, N);
 
         free(matriz);
 		free(variaveis);
