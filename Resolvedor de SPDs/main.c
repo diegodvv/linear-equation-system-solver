@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "determinant.h"
 
-void ResolverPorTeoremaDeCramer(double** matriz, char* variaveis, int N)
+void ResolverPorTeoremaDeCramer(double** matriz, char** variaveis, int N)
 {
 	int i, i2;
 	double D = Determinant(matriz, N);
@@ -33,7 +33,7 @@ void ResolverPorTeoremaDeCramer(double** matriz, char* variaveis, int N)
 		}
 
 		double var_val = Determinant(matriz_var, N) / D;
-		printf(" %c: %.2lf\n", *(variaveis + i), var_val);
+		printf(" %s: %.2lf\n", *(variaveis + i), var_val);
 
 
 		for (i2=0; i2 <= N-1; i2++)
@@ -72,7 +72,7 @@ void somaLinhas(double* l1, double* l2, int length)
 	}
 }
 
-void ResolverPorGauss(double** matriz, char* variaveis, int N)
+void ResolverPorGauss(double** matriz, char** variaveis, int N)
 {
 	int i, i2, i3;
 	//Eliminar zeros da diagonal principal
@@ -119,15 +119,15 @@ void ResolverPorGauss(double** matriz, char* variaveis, int N)
 		{
 			if (*(*(matriz + i) + i2) != 0 && i != i2)
 			{
-				double* linha_a_ser_somada = (double*) malloc(N+1 * sizeof(double));
-				//double linha_a_ser_somada[N+1];
-				copiarLinha(*(matriz + i2), linha_a_ser_somada, N+1);
+				//double* linha_a_ser_somada = (double*) malloc(N+1 * sizeof(double));
+				double linha_a_ser_somada[N+1];
+				copiarLinha(*(matriz + i2), &linha_a_ser_somada, N+1);
 
-				multiplicaLinha(linha_a_ser_somada, N+1, -1 * *(*(matriz + i) + i2));
+				multiplicaLinha(&linha_a_ser_somada, N+1, -1 * *(*(matriz + i) + i2));
 
-				somaLinhas(*(matriz + i), linha_a_ser_somada, N+1);
+				somaLinhas(*(matriz + i), &linha_a_ser_somada, N+1);
 
-				free((void*)linha_a_ser_somada);
+				//free((void*)linha_a_ser_somada);
 
 				//Tornar os elementos da diagonal principal 1
 				for (i3=0; i3 < N; i3++)
@@ -147,7 +147,7 @@ void ResolverPorGauss(double** matriz, char* variaveis, int N)
 
 	for (i=0; i < N; i++)
 	{
-		printf(" %c: %.2lf\n", *(variaveis + i), *(*(matriz + i) + N));
+		printf(" %s: %.2lf\n", *(variaveis + i), *(*(matriz + i) + N));
 	}
 }
 
@@ -238,12 +238,13 @@ int main()
         int i;
         int i2;
 
-        char* variaveis = (char*) malloc(N * sizeof(char));
+        char** variaveis = (char**) malloc(N * sizeof(char*));
         double** matriz = (double**) malloc(N * sizeof(double*));
 
         for (i=0; i <= N-1; i++)
         {
             *(matriz + i) = (double*)malloc((N+1) * sizeof(double));
+            *(variaveis + i) = NULL;
         }
 
         //Le as variaveis
@@ -251,7 +252,22 @@ int main()
         {
             for (i2=0; i2 <= N-1; i2++)
             {
-                fscanf(arquivo, "%lf%c ", (*(matriz + i) + i2), (variaveis + i2));
+                char buf[100];
+                fscanf(arquivo, "%lf", (*(matriz + i) + i2));
+                //, (variaveis + i2));
+                fscanf(arquivo, "%s", buf);
+
+                if (*(variaveis + i2) == NULL)
+                {
+                    *(variaveis + i2) = (char*) malloc(strlen(buf) * sizeof(char));
+                    strcpy(*(variaveis + i2), buf);
+                }
+
+                c = fgetc(arquivo);
+                while (!((isdigit(c)) || c == '+' || c == '-' || c == '='))
+                    c = fgetc(arquivo);
+
+                ungetc(c, arquivo);
             }
 
             fscanf(arquivo, "= %lf", (*(matriz + i) + N));
@@ -273,6 +289,7 @@ int main()
         for (i=0; i <= N-1; i++)
         {
         	free(*(matriz + i));
+        	free(*(variaveis + i));
         }
 
         free(matriz);
