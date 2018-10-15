@@ -57,12 +57,12 @@ double Determinant(double **a,int n)
     if (n < 1)    {   }                // error condition, should never get here
 
     else if (n == 1) {                 // should not get here
-        det = a[0][0] ;
+        det = *(*(a + 0) + 0)/*a[0][0]*/;
         }
 
     else if (n == 2)  {                // basic 2X2 sub-matrix determinate
                                        // definition. When n==2, this ends the
-        det = a[0][0] * a[1][1] - a[1][0] * a[0][1] ;// the recursion series
+        det = *(*(a + 0) + 0) * *(*(a + 1) + 1) - *(*(a + 1) + 0) * *(*(a + 0) + 1) ;// the recursion series
         }
 
 
@@ -77,7 +77,7 @@ double Determinant(double **a,int n)
             m = (double **) malloc((n-1)* sizeof(double *)) ;
 
             for (i = 0 ; i < n-1 ; i++)
-                m[i] = (double *) malloc((n-1)* sizeof(double)) ;
+                *(m + i) = (double *) malloc((n-1)* sizeof(double)) ;
                        //     i[0][1][2][3]  first malloc
                        //  m -> +  +  +  +   space for 4 pointers
                        //       |  |  |  |          j  second malloc
@@ -94,20 +94,20 @@ double Determinant(double **a,int n)
                 for (j = 0 ; j < n ; j++) {
                     if (j == j1) continue ; // don't copy the minor column element
 
-                    m[i-1][j2] = a[i][j] ;  // copy source element into new sub-matrix
+                    *(*(m + i-1) + j2) = *(*(a + i) + j) ;  // copy source element into new sub-matrix
                                             // i-1 because new sub-matrix is one row
                                             // (and column) smaller with excluded minors
                     j2++ ;                  // move to next sub-matrix column position
                     }
                 }
 
-            det += pow(-1.0,1.0 + j1 + 1.0) * a[0][j1] * Determinant(m,n-1) ;
+            det += pow(-1.0,1.0 + j1 + 1.0) * *(*(a + 0) + j1) * Determinant(m,n-1) ;
                                             // sum x raised to y power
                                             // recursively get determinant of next
                                             // sub-matrix which is now one
                                             // row & column smaller
 
-            for (i = 0 ; i < n-1 ; i++) free(m[i]) ;// free the storage allocated to
+            for (i = 0 ; i < n-1 ; i++) free(*(m + i)) ;// free the storage allocated to
                                             // to this minor's set of pointers
             free(m) ;                       // free the storage for the original
                                             // pointer to pointer
