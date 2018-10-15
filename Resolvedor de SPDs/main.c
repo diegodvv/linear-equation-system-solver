@@ -45,6 +45,32 @@ void ResolverPorTeoremaDeCramer(double** matriz, char* variaveis, int N)
 	}
 }
 
+void copiarLinha(double* linha_fonte, double* linha_destino, int length)
+{
+	int i;
+	for (i=0; i < length; i++)
+	{
+		*(linha_destino + i) = *(linha_fonte + i);
+	}
+}
+
+void multiplicaLinha(double* linha, int length, double numero)
+{
+	int i;
+	for (i=0; i < length; i++)
+	{
+		*(linha + i) *= numero;
+	}
+}
+
+void somaLinhas(double* l1, double* l2, int length)
+{
+	int i;
+	for (i=0; i < length; i++)
+	{
+		*(l1 + i) += *(l2 + i);
+	}
+}
 
 void ResolverPorGauss(double** matriz, char* variaveis, int N)
 {
@@ -94,13 +120,14 @@ void ResolverPorGauss(double** matriz, char* variaveis, int N)
 			if (*(*(matriz + i) + i2) != 0 && i != i2)
 			{
 				double* linha_a_ser_somada = (double*) malloc(N+1 * sizeof(double));
+				//double linha_a_ser_somada[N+1];
 				copiarLinha(*(matriz + i2), linha_a_ser_somada, N+1);
 
 				multiplicaLinha(linha_a_ser_somada, N+1, -1 * *(*(matriz + i) + i2));
 
 				somaLinhas(*(matriz + i), linha_a_ser_somada, N+1);
 
-				free(linha_a_ser_somada);
+				free((void*)linha_a_ser_somada);
 
 				//Tornar os elementos da diagonal principal 1
 				for (i3=0; i3 < N; i3++)
@@ -124,32 +151,7 @@ void ResolverPorGauss(double** matriz, char* variaveis, int N)
 	}
 }
 
-void copiarLinha(double* linha_fonte, double* linha_destino, int length)
-{
-	int i;
-	for (i=0; i < length; i++)
-	{
-		*(linha_destino + i) = *(linha_fonte + i);
-	}
-}
 
-void multiplicaLinha(double* linha, int length, double numero)
-{
-	int i;
-	for (i=0; i < length; i++)
-	{
-		*(linha + i) *= numero;
-	}
-}
-
-void somaLinhas(double* l1, double* l2, int length)
-{
-	int i;
-	for (i=0; i < length; i++)
-	{
-		*(l1 + i) += *(l2 + i);
-	}
-}
 
 /*char* matrixToString(double** matrix, int N)
 {
@@ -267,6 +269,11 @@ int main()
 
         //ResolverPorTeoremaDeCramer(matriz, variaveis, N);
         ResolverPorGauss(matriz, variaveis, N);
+
+        for (i=0; i <= N-1; i++)
+        {
+        	free(*(matriz + i));
+        }
 
         free(matriz);
 		free(variaveis);
