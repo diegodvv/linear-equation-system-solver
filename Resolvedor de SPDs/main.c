@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "determinant.h"
+#include "lista.h"
 
-void ResolverPorTeoremaDeCramer(double** matriz, char** variaveis, int N)
+/*void ResolverPorTeoremaDeCramer(double** matriz, char** variaveis, int N)
 {
 	int i, i2;
 	double D = Determinant(matriz, N);
@@ -43,7 +44,7 @@ void ResolverPorTeoremaDeCramer(double** matriz, char** variaveis, int N)
 
 		free(matriz_var);
 	}
-}
+}*/
 
 void copiarLinha(double* linha_fonte, double* linha_destino, int length)
 {
@@ -72,7 +73,7 @@ void somaLinhas(double* l1, double* l2, int length)
 	}
 }
 
-void ResolverPorGauss(double** matriz, char** variaveis, int N)
+void ResolverPorGauss(double** matriz, /*char***/lista variaveis, int N)
 {
 	int i, i2, i3;
 	//Eliminar zeros da diagonal principal
@@ -145,13 +146,14 @@ void ResolverPorGauss(double** matriz, char** variaveis, int N)
 		}
 	}
 
+    struct _listaNo* no = variaveis.prim;
+
 	for (i=0; i < N; i++)
 	{
-		printf(" %s: %.2lf\n", *(variaveis + i), *(*(matriz + i) + N));
+        printf(" %s: %.2lf\n", (char*)no->data, *(*(matriz + i) + N));
+        no = no->next;
 	}
 }
-
-
 
 /*char* matrixToString(double** matrix, int N)
 {
@@ -198,6 +200,11 @@ void ResolverPorGauss(double** matriz, char** variaveis, int N)
 	return string;
 }*/
 
+void free_strings(void* string)
+{
+    free(*(char**)string);
+}
+
 int main()
 {
 	//setbuf(stdout, NULL);
@@ -238,13 +245,15 @@ int main()
         int i;
         int i2;
 
-        char** variaveis = (char**) malloc(N * sizeof(char*));
+        //char** variaveis = (char**) malloc(N * sizeof(char*));
+        lista variaveis;
+        lista_new(&variaveis, sizeof(char*), free_strings);
         double** matriz = (double**) malloc(N * sizeof(double*));
 
         for (i=0; i <= N-1; i++)
         {
             *(matriz + i) = (double*)malloc((N+1) * sizeof(double));
-            *(variaveis + i) = NULL;
+            //*(variaveis + i) = NULL;
         }
 
         //Le as variaveis
@@ -252,15 +261,16 @@ int main()
         {
             for (i2=0; i2 <= N-1; i2++)
             {
-                char buf[100];
+                char buf[100];//* buf = (char*) malloc(100 * sizeof(char));//[100];
                 fscanf(arquivo, "%lf", (*(matriz + i) + i2));
                 //, (variaveis + i2));
                 fscanf(arquivo, "%s", buf);
 
-                if (*(variaveis + i2) == NULL)
+                if (variaveis.logicalLength == i2)//(*(variaveis + i2) == NULL)
                 {
-                    *(variaveis + i2) = (char*) malloc(strlen(buf) * sizeof(char));
-                    strcpy(*(variaveis + i2), buf);
+                    /**(variaveis + i2) = (char*) malloc(strlen(buf) * sizeof(char));
+                    strcpy(*(variaveis + i2), buf);*/
+                    lista_append(&variaveis, buf);
                 }
 
                 c = fgetc(arquivo);
@@ -289,11 +299,12 @@ int main()
         for (i=0; i <= N-1; i++)
         {
         	free(*(matriz + i));
-        	free(*(variaveis + i));
+        	//free(*(variaveis + i));
         }
 
         free(matriz);
-		free(variaveis);
+		//free(variaveis);
+		lista_destroy(&variaveis);
 
 		printf("==========\n");
     }
