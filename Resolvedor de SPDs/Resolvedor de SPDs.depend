@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1539885564 source:c:\users\u17168\documents\github\resolvedor-de-spds\resolvedor de spds\main.c
+1539887041 source:c:\users\u17168\documents\github\resolvedor-de-spds\resolvedor de spds\main.c
 	<stdio.h>
 	<stdlib.h>
 	"determinant.h"
@@ -11,7 +11,7 @@
 
 1539882744 c:\users\u17168\documents\github\resolvedor-de-spds\resolvedor de spds\determinant.h
 
-1539885652 source:c:\users\u17168\documents\github\resolvedor-de-spds\resolvedor de spds\lista.c
+1539886238 source:c:\users\u17168\documents\github\resolvedor-de-spds\resolvedor de spds\lista.c
 	<stdlib.h>
 	<string.h>
 	<assert.h>

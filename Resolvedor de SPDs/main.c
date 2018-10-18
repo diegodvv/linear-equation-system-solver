@@ -202,7 +202,7 @@ void ResolverPorGauss(double** matriz, /*char***/lista variaveis, int N)
 
 void free_strings(void* string)
 {
-    free(*(char**)string);
+    free((char*)string);
 }
 
 int main()
@@ -261,7 +261,8 @@ int main()
         {
             for (i2=0; i2 <= N-1; i2++)
             {
-                char buf[100];//* buf = (char*) malloc(100 * sizeof(char));//[100];
+                char* buf[100];//* buf = (char*) malloc(100 * sizeof(char));//[100];
+
                 fscanf(arquivo, "%lf", (*(matriz + i) + i2));
                 //, (variaveis + i2));
                 fscanf(arquivo, "%s", buf);
@@ -270,7 +271,7 @@ int main()
                 {
                     /**(variaveis + i2) = (char*) malloc(strlen(buf) * sizeof(char));
                     strcpy(*(variaveis + i2), buf);*/
-                    lista_append(&variaveis, buf);
+                    lista_append(&variaveis, &buf);
                 }
 
                 c = fgetc(arquivo);

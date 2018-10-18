@@ -20,9 +20,9 @@ void lista_destroy(lista *lista)
     current = lista->prim;
     lista->prim = current->next;
 
-    /*if(lista->freeFn) {
+    if(lista->freeFn) {
       lista->freeFn(current->data);
-    }*/
+    }
 
     free(current->data);
     free(current);
